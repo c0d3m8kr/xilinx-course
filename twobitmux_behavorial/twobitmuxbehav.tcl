@@ -41,7 +41,7 @@ if { [info exists ::origin_dir_loc] } {
 }
 
 # Set the project name
-set _xil_proj_name_ "twobitmuxbahavorial"
+set _xil_proj_name_ "twobitmuxbehavorial"
 
 # Use project name variable, if specified in the tcl shell
 if { [info exists ::user_project_name] } {
