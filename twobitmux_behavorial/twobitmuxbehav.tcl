@@ -32,22 +32,6 @@
 #
 #*****************************************************************************************
 
-# Check file required for this script exists
-proc checkRequiredFiles { origin_dir} {
-  set status true
-  set files [list \
-   "D:/development/vivado/twobitmuxbahavorial/twobitmuxbahavorial.srcs/sources_1/new/twobitbehav.vhd" \
-   "D:/development/vivado/twobitmuxbahavorial/twobitmuxbahavorial.srcs/constrs_1/new/ioconstr.xdc" \
-  ]
-  foreach ifile $files {
-    if { ![file isfile $ifile] } {
-      puts " Could not find local file $ifile "
-      set status false
-    }
-  }
-
-  return $status
-}
 # Set the reference directory for source file relative paths (by default the value is script directory path)
 set origin_dir "."
 
@@ -113,7 +97,7 @@ if { $::argc > 0 } {
 }
 
 # Set the directory path for the original project from where this script was exported
-set orig_proj_dir "D:/development/vivado/twobitmuxbahavorial"
+set orig_proj_dir "[file normalize "$origin_dir/"]"
 
 # Check for paths and files needed for project creation
 set validate_required 0
@@ -134,7 +118,6 @@ set proj_dir [get_property directory [current_project]]
 
 # Set project properties
 set obj [current_project]
-set_property -name "board_part_repo_paths" -value "[file normalize "$origin_dir/2021.2/xhub/board_store/xilinx_board_store"]" -objects $obj
 set_property -name "board_part" -value "avnet.com:microzed_7020:part0:1.3" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "enable_vhdl_2008" -value "1" -objects $obj
@@ -157,7 +140,7 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 # Import local files from the original project
 set files [list \
- "D:/development/vivado/twobitmuxbahavorial/twobitmuxbahavorial.srcs/sources_1/new/twobitbehav.vhd"\
+ "[file normalize "$origin_dir/twobitbehav.vhd"]"\
 ]
 set imported_files [import_files -fileset sources_1 $files]
 
@@ -165,7 +148,7 @@ set imported_files [import_files -fileset sources_1 $files]
 # None
 
 # Set 'sources_1' fileset file properties for local files
-set file "new/twobitbehav.vhd"
+set file "twobitbehav.vhd"
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "VHDL" -objects $file_obj
 
@@ -183,14 +166,15 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize "$origin_dir/D:/development/vivado/twobitmuxbahavorial/twobitmuxbahavorial.srcs/constrs_1/new/ioconstr.xdc"]"
+set file "[file normalize "$origin_dir/ioconstr.xdc"]"
 set file_imported [import_files -fileset constrs_1 [list $file]]
-set file "new/ioconstr.xdc"
+set file "ioconstr.xdc"
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
+set_property -name "target_constrs_file" -value "[get_files *new/ioconstr.xdc]" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
